@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import CtaBanner from '../../components/CtaBanner.astro';
+import CaseCard from '../../components/CaseCard.astro';
+import { getLangStaticPaths, useTranslations, localizedPath } from '../../i18n/utils';
+import { cases } from '../../data/cases';
+
+export function getStaticPaths() {
+  return getLangStaticPaths();
+}
+
+const { lang } = Astro.params;
+const t = useTranslations(lang);
+---
+
+<BaseLayout lang={lang} title={t.meta.portfolio.title} description={t.meta.portfolio.description} path="portfolio">
+  <PageHero eyebrow={t.portfolio.eyebrow} title={t.portfolio.title} intro={t.portfolio.intro} />
+
+  <section class="section">
+    <div class="container">
+      <div class="grid-auto">
+        {cases.map((item) => {
+          const caseT = t.portfolio.cases[item.id];
+          return (
+            <CaseCard
+              title={caseT.title}
+              category={caseT.category}
+              description={caseT.description}
+              url={item.url}
+              domain={item.domain}
+              year={item.year}
+              image={item.image}
+              visitLabel={t.portfolio.visitSite}
+            />
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <CtaBanner
+    title={t.portfolio.cta.title}
+    buttonLabel={t.portfolio.cta.button}
+    href={localizedPath(lang, 'contact')}
+  />
+</BaseLayout>

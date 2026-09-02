@@ -1,0 +1,13 @@
+---
+import { useTranslations, localizedPath } from '../i18n/utils';
+import CtaBanner from '../components/CtaBanner.astro';
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<CtaBanner
+  title={t.portfolio.cta.title}
+  buttonLabel={t.portfolio.cta.button}
+  href={localizedPath(lang, 'contact')}
+/>

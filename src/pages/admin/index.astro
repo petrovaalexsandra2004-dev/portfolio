@@ -1,0 +1,727 @@
+---
+export const prerender = false;
+
+const adminPass = import.meta.env.ADMIN_PASSWORD;
+const cookie = Astro.cookies.get('admin_auth');
+if (!adminPass || cookie?.value !== adminPass) {
+  return Astro.redirect('/admin/login');
+}
+
+const { getWriteClient, isSanityConfigured } = await import('../../sanity/client.js');
+
+let submissions = [];
+let testimonials = [];
+
+if (isSanityConfigured) {
+  try {
+    const client = getWriteClient();
+    [submissions, testimonials] = await Promise.all([
+      client.fetch(`*[_type == "contactSubmission"] | order(_createdAt desc) {
+        _id, name, email, message, lang, status, _createdAt
+      }`),
+      client.fetch(`*[_type == "testimonial"] | order(_createdAt desc) {
+        _id, name, company, text, rating, approved, _createdAt
+      }`),
+    ]);
+  } catch (e) {
+    console.error('Admin fetch error:', e);
+  }
+}
+
+const newCount = submissions.filter(s => s.status === 'new').length;
+const seenCount = submissions.filter(s => s.status === 'seen').length;
+const doneCount = submissions.filter(s => s.status === 'done').length;
+const approvedCount = testimonials.filter(t => t.approved).length;
+const pendingCount = testimonials.filter(t => !t.approved).length;
+
+function formatDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  const now = new Date();
+  const diff = now - d;
+  if (diff < 3600_000) return `${Math.floor(diff / 60000)} мин назад`;
+  if (diff < 86400_000) return `${Math.floor(diff / 3600000)} ч назад`;
+  return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+}
+
+function initials(name) {
+  return (name || '?')
+    .split(' ')
+    .map(w => w[0] || '')
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+}
+---
+
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin · AP.</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sidebar-w: 220px;
+      --accent: #818cf8;
+      --accent-dim: rgba(129,140,248,0.25);
+      --accent-border: rgba(129,140,248,0.4);
+      --glass-bg: rgba(255,255,255,0.06);
+      --glass-border: rgba(255,255,255,0.1);
+      --glass-hover: rgba(255,255,255,0.1);
+      --text: #e2e8f0;
+      --muted: rgba(255,255,255,0.42);
+      --green: #34d399;
+      --green-bg: rgba(52,211,153,0.12);
+      --green-border: rgba(52,211,153,0.3);
+      --yellow: #fbbf24;
+      --yellow-bg: rgba(251,191,36,0.12);
+      --yellow-border: rgba(251,191,36,0.3);
+      --slate: #94a3b8;
+      --slate-bg: rgba(100,116,139,0.14);
+      --slate-border: rgba(100,116,139,0.3);
+      --red: #f87171;
+      --red-bg: rgba(239,68,68,0.15);
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      background: linear-gradient(135deg, #0f0c29 0%, #160f38 50%, #0d1f3c 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── blobs ── */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(100px);
+      z-index: 0;
+    }
+    .blob-1 {
+      width: 600px; height: 600px;
+      top: -200px; left: -120px;
+      background: radial-gradient(circle, rgba(79,70,229,0.38) 0%, transparent 70%);
+    }
+    .blob-2 {
+      width: 400px; height: 400px;
+      bottom: -100px; right: -60px;
+      background: radial-gradient(circle, rgba(124,58,237,0.3) 0%, transparent 70%);
+    }
+
+    /* ── layout ── */
+    .layout {
+      display: flex;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── sidebar ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 1.75rem 0 1.5rem;
+      background: rgba(15,12,41,0.7);
+      border-right: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .sidebar-logo {
+      padding: 0 1.25rem 1.75rem;
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+    .sidebar-logo em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    .sidebar-section {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+      padding: 0 1.25rem 0.5rem;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      width: calc(100% - 1rem);
+      margin: 0.1rem 0.5rem;
+      padding: 0.6rem 0.75rem;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      color: rgba(255,255,255,0.45);
+      font-size: 0.82rem;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .nav-item:hover {
+      background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.7);
+    }
+    .nav-item.active {
+      background: var(--accent-dim);
+      border-color: var(--accent-border);
+      color: #c7d2fe;
+    }
+    .nav-icon { font-size: 1rem; flex-shrink: 0; }
+    .nav-badge {
+      margin-left: auto;
+      background: var(--red-bg);
+      color: var(--red);
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.1rem 0.45rem;
+      border-radius: 9999px;
+      border: 1px solid rgba(239,68,68,0.3);
+    }
+
+    .sidebar-spacer { flex: 1; }
+
+    .sidebar-logout {
+      margin: 0 0.75rem;
+      padding: 0.55rem 0.75rem;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      color: rgba(255,255,255,0.35);
+      font-size: 0.78rem;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .sidebar-logout:hover {
+      border-color: rgba(255,255,255,0.25);
+      color: rgba(255,255,255,0.65);
+      background: rgba(255,255,255,0.04);
+    }
+
+    /* ── main ── */
+    .main {
+      flex: 1;
+      padding: 2rem 2rem 4rem;
+      min-width: 0;
+    }
+
+    /* ── stats ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      backdrop-filter: blur(16px);
+    }
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 0.35rem;
+    }
+    .stat-value.accent { color: var(--accent); }
+    .stat-value.green  { color: var(--green); }
+    .stat-value.yellow { color: var(--yellow); }
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* ── panel heading ── */
+    .panel-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.25rem;
+      color: rgba(255,255,255,0.9);
+    }
+
+    /* ── tab panel ── */
+    .tab-panel.hidden { display: none; }
+
+    /* ── cards ── */
+    .cards-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.875rem;
+    }
+
+    .glass-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 1.25rem 1.5rem;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .glass-card:hover {
+      background: var(--glass-hover);
+      border-color: rgba(255,255,255,0.16);
+    }
+
+    /* ── submission card ── */
+    .card-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.875rem;
+      margin-bottom: 0.875rem;
+    }
+
+    .avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #818cf8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .card-info { flex: 1; min-width: 0; }
+    .card-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.9);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .card-email {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+    .card-lang {
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+      margin-top: 2px;
+    }
+
+    .card-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.35rem;
+      flex-shrink: 0;
+    }
+
+    .status-pill {
+      display: inline-block;
+      padding: 0.2rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.68rem;
+      font-weight: 600;
+    }
+    .status-pill.status-new    { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+    .status-pill.status-seen   { background: var(--yellow-bg); color: var(--yellow); border: 1px solid var(--yellow-border); }
+    .status-pill.status-done   { background: var(--slate-bg); color: var(--slate); border: 1px solid var(--slate-border); }
+
+    .card-date {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.25);
+    }
+
+    .card-msg {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.6;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-foot {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .status-btn {
+      padding: 0.3rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.7rem;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.38);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .status-btn:hover {
+      border-color: rgba(255,255,255,0.28);
+      color: rgba(255,255,255,0.65);
+    }
+    .status-btn.active {
+      background: var(--accent-dim);
+      border-color: var(--accent-border);
+      color: #c7d2fe;
+    }
+
+    /* ── testimonial card ── */
+    .testimonial-card .card-head {
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .stars {
+      font-size: 0.875rem;
+      letter-spacing: 2px;
+      margin-top: 0.25rem;
+      color: var(--accent);
+    }
+
+    .approve-side {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.5rem;
+    }
+
+    .approve-badge {
+      padding: 0.2rem 0.7rem;
+      border-radius: 9999px;
+      font-size: 0.68rem;
+      font-weight: 600;
+    }
+    .approve-badge.approved { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+    .approve-badge.pending  { background: var(--yellow-bg); color: var(--yellow); border: 1px solid var(--yellow-border); }
+
+    .toggle-btn {
+      padding: 0.3rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.7rem;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.14);
+      color: rgba(255,255,255,0.45);
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .toggle-btn:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.28);
+      color: rgba(255,255,255,0.7);
+    }
+
+    .card-quote {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.65;
+      font-style: italic;
+    }
+
+    /* ── empty ── */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--muted);
+      font-size: 0.875rem;
+      border: 1px dashed rgba(255,255,255,0.1);
+      border-radius: 16px;
+    }
+
+    /* ── toast ── */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      padding: 0.75rem 1.25rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      backdrop-filter: blur(20px);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.25s, transform 0.25s;
+      pointer-events: none;
+      z-index: 999;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.ok  { background: rgba(52,211,153,0.18); border: 1px solid var(--green-border); color: var(--green); }
+    .toast.err { background: rgba(239,68,68,0.18); border: 1px solid rgba(239,68,68,0.4); color: var(--red); }
+
+    /* ── loading overlay ── */
+    .loading-ring {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.15);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 0.4rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── responsive ── */
+    @media (max-width: 900px) {
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .sidebar { display: none; }
+      .main { padding: 1.25rem 1rem 3rem; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <div class="layout">
+
+    <!-- ─── Sidebar ─── -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">AP.<em>admin</em></div>
+
+      <div class="sidebar-section">Контент</div>
+      <button class="nav-item active" id="tab-btn-submissions" data-tab="submissions">
+        <span class="nav-icon">✉</span>
+        Заявки
+        {newCount > 0 && <span class="nav-badge">{newCount}</span>}
+      </button>
+      <button class="nav-item" id="tab-btn-testimonials" data-tab="testimonials">
+        <span class="nav-icon">★</span>
+        Отзывы
+        {pendingCount > 0 && <span class="nav-badge">{pendingCount}</span>}
+      </button>
+
+      <div class="sidebar-spacer"></div>
+
+      <button class="sidebar-logout" id="logout-btn">
+        ← Выйти
+      </button>
+    </aside>
+
+    <!-- ─── Main ─── -->
+    <main class="main">
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-value accent">{newCount}</div>
+          <div class="stat-label">Новых заявок</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">{submissions.length}</div>
+          <div class="stat-label">Заявок всего</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value green">{approvedCount}</div>
+          <div class="stat-label">Отзывов на сайте</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value yellow">{pendingCount}</div>
+          <div class="stat-label">Ждут публикации</div>
+        </div>
+      </div>
+
+      <!-- ─── Submissions ─── -->
+      <div class="tab-panel" id="panel-submissions">
+        <div class="panel-title">Заявки с сайта</div>
+
+        {submissions.length === 0 ? (
+          <div class="empty-state">Заявок пока нет</div>
+        ) : (
+          <div class="cards-grid">
+            {submissions.map((s) => (
+              <article class="glass-card submission-card" data-id={s._id} data-status={s.status}>
+                <div class="card-head">
+                  <div class="avatar">{initials(s.name)}</div>
+                  <div class="card-info">
+                    <div class="card-name">{s.name}</div>
+                    <div class="card-email">{s.email}</div>
+                    {s.lang && <div class="card-lang">{s.lang}</div>}
+                  </div>
+                  <div class="card-right">
+                    <span class={`status-pill status-${s.status}`}>
+                      {s.status === 'new' ? 'Новая' : s.status === 'seen' ? 'Просмотрена' : 'Обработана'}
+                    </span>
+                    <span class="card-date">{formatDate(s._createdAt)}</span>
+                  </div>
+                </div>
+
+                <div class="card-msg">{s.message}</div>
+
+                <div class="card-foot">
+                  <button class={`status-btn${s.status === 'new' ? ' active' : ''}`} data-status="new">Новая</button>
+                  <button class={`status-btn${s.status === 'seen' ? ' active' : ''}`} data-status="seen">Просмотрена</button>
+                  <button class={`status-btn${s.status === 'done' ? ' active' : ''}`} data-status="done">Обработана</button>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <!-- ─── Testimonials ─── -->
+      <div class="tab-panel hidden" id="panel-testimonials">
+        <div class="panel-title">Отзывы</div>
+
+        {testimonials.length === 0 ? (
+          <div class="empty-state">Отзывов пока нет</div>
+        ) : (
+          <div class="cards-grid">
+            {testimonials.map((t) => (
+              <article class="glass-card testimonial-card" data-id={t._id} data-approved={String(t.approved)}>
+                <div class="card-head">
+                  <div>
+                    <div class="card-name">{t.name}</div>
+                    {t.company && <div class="card-email">{t.company}</div>}
+                    <div class="stars">
+                      {'★'.repeat(t.rating || 0)}{'☆'.repeat(Math.max(0, 5 - (t.rating || 0)))}
+                    </div>
+                  </div>
+                  <div class="approve-side">
+                    <span class={`approve-badge ${t.approved ? 'approved' : 'pending'}`}>
+                      {t.approved ? '✓ На сайте' : '⏳ На модерации'}
+                    </span>
+                    <button class="toggle-btn">
+                      {t.approved ? 'Снять' : 'Опубликовать'}
+                    </button>
+                  </div>
+                </div>
+                <div class="card-quote">"{t.text}"</div>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast"></div>
+
+  <script is:inline>
+    /* ── tab switching ── */
+    document.querySelectorAll('.nav-item[data-tab]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var tab = btn.dataset.tab;
+        document.querySelectorAll('.nav-item[data-tab]').forEach(function(b) { b.classList.remove('active'); });
+        document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.add('hidden'); });
+        btn.classList.add('active');
+        document.getElementById('panel-' + tab).classList.remove('hidden');
+      });
+    });
+
+    /* ── toast ── */
+    function showToast(msg, ok) {
+      var t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast ' + (ok !== false ? 'ok' : 'err') + ' show';
+      clearTimeout(t._timer);
+      t._timer = setTimeout(function() { t.classList.remove('show'); }, 3000);
+    }
+
+    /* ── logout ── */
+    document.getElementById('logout-btn').addEventListener('click', async function() {
+      await fetch('/api/admin/logout', { method: 'POST', credentials: 'include' });
+      location.href = '/admin/login';
+    });
+
+    /* ── submission status ── */
+    document.querySelectorAll('.submission-card').forEach(function(card) {
+      card.querySelectorAll('.status-btn').forEach(function(btn) {
+        btn.addEventListener('click', async function() {
+          var id = card.dataset.id;
+          var status = btn.dataset.status;
+          if (card.dataset.status === status) return;
+
+          btn.disabled = true;
+          var res = await fetch('/api/admin/update-submission', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ id: id, status: status }),
+          });
+          btn.disabled = false;
+
+          var data = await res.json();
+          if (data.ok) {
+            card.dataset.status = status;
+            card.querySelectorAll('.status-btn').forEach(function(b) {
+              b.classList.toggle('active', b.dataset.status === status);
+            });
+            var pill = card.querySelector('.status-pill');
+            pill.className = 'status-pill status-' + status;
+            var labels = { new: 'Новая', seen: 'Просмотрена', done: 'Обработана' };
+            pill.textContent = labels[status];
+            showToast('Статус обновлён');
+          } else {
+            showToast('Ошибка обновления', false);
+          }
+        });
+      });
+    });
+
+    /* ── testimonial toggle ── */
+    document.querySelectorAll('.testimonial-card').forEach(function(card) {
+      var toggleBtn = card.querySelector('.toggle-btn');
+      if (!toggleBtn) return;
+      toggleBtn.addEventListener('click', async function() {
+        var id = card.dataset.id;
+        var approved = card.dataset.approved !== 'true';
+
+        toggleBtn.disabled = true;
+        var res = await fetch('/api/admin/update-testimonial', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ id: id, approved: approved }),
+        });
+        toggleBtn.disabled = false;
+
+        var data = await res.json();
+        if (data.ok) {
+          card.dataset.approved = String(approved);
+          var badge = card.querySelector('.approve-badge');
+          badge.className = 'approve-badge ' + (approved ? 'approved' : 'pending');
+          badge.textContent = approved ? '✓ На сайте' : '⏳ На модерации';
+          toggleBtn.textContent = approved ? 'Снять' : 'Опубликовать';
+          showToast(approved ? 'Отзыв опубликован' : 'Отзыв снят с сайта');
+        } else {
+          showToast('Ошибка обновления', false);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

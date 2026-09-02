@@ -1,0 +1,57 @@
+---
+const { number, title, description, priceLabel, ctaLabel, href } = Astro.props;
+---
+
+<article class="pricing-card hard-card" data-reveal>
+  <span class="pricing-card__number mono-tag">{number}</span>
+  <h3 class="pricing-card__title">{title}</h3>
+  <p class="pricing-card__description">{description}</p>
+  <div class="pricing-card__footer">
+    <span class="pricing-card__price">{priceLabel}</span>
+    <a href={href} class="btn btn--ghost btn--sm">{ctaLabel}</a>
+  </div>
+</article>
+
+<style lang="scss">
+  .pricing-card {
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+  }
+
+  .pricing-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 10px 10px 0 var(--color-shadow);
+  }
+
+  .pricing-card__number {
+    color: var(--color-accent);
+  }
+
+  .pricing-card__title {
+    font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.625rem);
+  }
+
+  .pricing-card__description {
+    flex-grow: 1;
+  }
+
+  .pricing-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .pricing-card__price {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text);
+  }
+</style>

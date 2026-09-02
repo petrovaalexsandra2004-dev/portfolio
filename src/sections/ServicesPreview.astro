@@ -1,0 +1,34 @@
+---
+import { useTranslations, localizedPath } from '../i18n/utils';
+import { services } from '../data/services';
+import ServiceCard from '../components/ServiceCard.astro';
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section class="section">
+  <div class="container">
+    <div class="section__head">
+      <div>
+        <span class="eyebrow">{t.servicesPreview.eyebrow}</span>
+        <h2>{t.servicesPreview.title}</h2>
+      </div>
+      <a href={localizedPath(lang, 'services')} class="btn btn--ghost btn--sm">{t.servicesPreview.linkAll} →</a>
+    </div>
+
+    <div class="grid-auto">
+      {services.map((service) => {
+        const item = t.services.items[service.id];
+        return (
+          <ServiceCard
+            number={service.number}
+            title={item.title}
+            description={item.description}
+            stack={item.stack}
+          />
+        );
+      })}
+    </div>
+  </div>
+</section>

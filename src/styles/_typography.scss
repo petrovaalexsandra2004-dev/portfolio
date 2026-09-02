@@ -1,0 +1,59 @@
+@use 'breakpoints' as *;
+
+body {
+  font-family: var(--font-body);
+  font-size: clamp(1rem, 0.95rem + 0.2vw, 1.125rem);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: clamp(2.75rem, 1.7rem + 5vw, 7.5rem);
+}
+
+h2 {
+  font-size: clamp(2.25rem, 1.6rem + 3vw, 4.5rem);
+}
+
+h3 {
+  font-size: clamp(1.5rem, 1.2rem + 1.4vw, 2.25rem);
+}
+
+h4 {
+  font-size: clamp(1.125rem, 1rem + 0.6vw, 1.5rem);
+}
+
+p {
+  color: var(--color-text-muted);
+  text-wrap: pretty;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.mono-tag {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.text-balance {
+  text-wrap: balance;
+}

@@ -1,0 +1,117 @@
+---
+import { useTranslations } from '../i18n/utils';
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section class="section about">
+  <div class="container">
+    <div class="section__head">
+      <span class="eyebrow">{t.about.eyebrow}</span>
+      <span class="section__number">01 / 05</span>
+    </div>
+
+    <div class="about__grid">
+      <h2 class="about__title" data-reveal>{t.about.title}</h2>
+      <p class="about__text" data-reveal>{t.about.text}</p>
+    </div>
+
+    <div class="about__stats" data-reveal-stagger>
+      {t.about.stats.map((stat) => (
+        <div class="about__stat">
+          <span class="about__stat-value">{stat.value}</span>
+          <span class="about__stat-label">{stat.label}</span>
+        </div>
+      ))}
+    </div>
+
+    <div class="about__features" data-reveal-stagger>
+      {t.about.features.map((feature) => (
+        <div class="about__feature hard-card">
+          <h3>{feature.title}</h3>
+          <p>{feature.text}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style lang="scss">
+  @use '../styles/breakpoints' as *;
+
+  .about__grid {
+    display: grid;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+
+    @include lg {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+  }
+
+  .about__text {
+    font-size: clamp(1.05rem, 1rem + 0.3vw, 1.2rem);
+    max-width: 48ch;
+  }
+
+  .about__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+    border: var(--border-width) solid var(--color-border-hard);
+  }
+
+  .about__stat {
+    padding: var(--space-lg) var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    border-right: var(--border-width) solid var(--color-border-hard);
+
+    &:last-child {
+      border-right: none;
+    }
+
+    @include md {
+      padding: var(--space-xl) var(--space-lg);
+    }
+  }
+
+  .about__stat-value {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 4vw + 1rem, 5rem);
+    font-weight: 800;
+    line-height: 1;
+    color: var(--color-accent);
+    letter-spacing: -0.03em;
+  }
+
+  .about__stat-label {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+  }
+
+  .about__features {
+    display: grid;
+    gap: var(--space-lg);
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+
+  .about__feature {
+    padding: var(--space-lg);
+  }
+
+  .about__feature h3 {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: var(--space-sm);
+  }
+</style>

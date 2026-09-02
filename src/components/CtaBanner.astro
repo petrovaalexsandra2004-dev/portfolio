@@ -1,0 +1,35 @@
+---
+const { title, buttonLabel, href } = Astro.props;
+---
+
+<section class="cta">
+  <div class="container cta__inner" data-reveal>
+    <h2 class="cta__title">{title}</h2>
+    <a href={href} class="btn btn--primary">{buttonLabel} →</a>
+  </div>
+</section>
+
+<style lang="scss">
+  @use '../styles/breakpoints' as *;
+
+  .cta {
+    padding-block: var(--space-2xl);
+  }
+
+  .cta__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    align-items: flex-start;
+
+    @include lg {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  .cta__title {
+    max-width: 16ch;
+  }
+</style>

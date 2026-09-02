@@ -1,0 +1,86 @@
+---
+import { useTranslations, localizedPath } from '../i18n/utils';
+import MarqueeStrip from '../components/MarqueeStrip.astro';
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section class="hero">
+  <div class="container hero__inner">
+    <p class="hero__badge eyebrow" data-reveal>{t.hero.available}</p>
+
+    <h1 class="hero__title">
+      {t.hero.lines.map((line, i) => (
+        <span class:list={['hero__line', { 'hero__line--accent': i === 1 }]} data-reveal>{line}</span>
+      ))}
+    </h1>
+
+    <div class="hero__bottom" data-reveal>
+      <p class="hero__subtitle">{t.hero.subtitle}</p>
+      <div class="hero__actions">
+        <a href={localizedPath(lang, 'portfolio')} class="btn btn--primary">{t.hero.ctaPrimary}</a>
+        <a href={localizedPath(lang, 'contact')} class="btn btn--ghost">{t.hero.ctaSecondary} →</a>
+      </div>
+    </div>
+
+    <div class="hero__scroll-hint mono-tag" aria-hidden="true">{t.hero.scrollHint}</div>
+  </div>
+
+  <MarqueeStrip items={t.marquee} />
+</section>
+
+<style lang="scss">
+  @use '../styles/breakpoints' as *;
+
+  .hero {
+    padding-top: var(--space-2xl);
+  }
+
+  .hero__inner {
+    padding-bottom: var(--space-xl);
+  }
+
+  .hero__badge {
+    margin-bottom: var(--space-lg);
+  }
+
+  .hero__title {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1em;
+  }
+
+  .hero__line--accent {
+    color: var(--color-accent);
+  }
+
+  .hero__bottom {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    margin-top: var(--space-xl);
+
+    @include lg {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+  }
+
+  .hero__subtitle {
+    max-width: 32ch;
+    font-size: clamp(1.05rem, 1rem + 0.4vw, 1.25rem);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+
+  .hero__scroll-hint {
+    margin-top: var(--space-xl);
+    color: var(--color-text-muted);
+  }
+</style>

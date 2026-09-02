@@ -1,0 +1,207 @@
+---
+export const prerender = false;
+
+const adminPass = import.meta.env.ADMIN_PASSWORD;
+const cookie = Astro.cookies.get('admin_auth');
+if (adminPass && cookie?.value === adminPass) {
+  return Astro.redirect('/admin');
+}
+
+const error = Astro.url.searchParams.get('error');
+---
+
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Вход · AP. Admin</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f0c29 0%, #160f38 50%, #0d1f3c 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #e2e8f0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(90px);
+    }
+    .blob-1 {
+      width: 500px; height: 500px;
+      top: -150px; left: -100px;
+      background: radial-gradient(circle, rgba(79,70,229,0.4) 0%, transparent 70%);
+    }
+    .blob-2 {
+      width: 350px; height: 350px;
+      bottom: -80px; right: -60px;
+      background: radial-gradient(circle, rgba(124,58,237,0.35) 0%, transparent 70%);
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      padding: 2.5rem 2.5rem 2rem;
+      width: min(380px, calc(100vw - 2rem));
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      margin-bottom: 0.25rem;
+    }
+    .logo em {
+      font-style: normal;
+      color: #818cf8;
+    }
+
+    .subtitle {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 2rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    label {
+      display: block;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    input[type="password"] {
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      color: #e2e8f0;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+      letter-spacing: 0.12em;
+      margin-bottom: 1.25rem;
+    }
+    input[type="password"]:focus {
+      border-color: rgba(129,140,248,0.6);
+      background: rgba(255,255,255,0.1);
+    }
+    input[type="password"]::placeholder {
+      letter-spacing: 0;
+      color: rgba(255,255,255,0.25);
+    }
+
+    .error {
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 8px;
+      padding: 0.6rem 0.875rem;
+      font-size: 0.8rem;
+      color: #f87171;
+      margin-bottom: 1rem;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 0.8rem;
+      background: rgba(99,102,241,0.3);
+      border: 1px solid rgba(129,140,248,0.4);
+      border-radius: 10px;
+      color: #c7d2fe;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      letter-spacing: 0.02em;
+    }
+    button[type="submit"]:hover {
+      background: rgba(99,102,241,0.45);
+      border-color: rgba(129,140,248,0.65);
+    }
+    button[type="submit"]:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .shake {
+      animation: shake 0.35s ease;
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%,60% { transform: translateX(-6px); }
+      40%,80% { transform: translateX(6px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <div class="card" id="card">
+    <div class="logo">AP.<em>admin</em></div>
+    <div class="subtitle">Управление сайтом</div>
+
+    <div class="error" id="err-box" style="display:none">Неверный пароль</div>
+
+    <form id="login-form">
+      <label for="pwd">Пароль</label>
+      <input type="password" id="pwd" name="password" placeholder="Введи пароль" autofocus autocomplete="current-password" />
+      <button type="submit" id="submit-btn">Войти</button>
+    </form>
+  </div>
+
+  <script is:inline>
+    const form = document.getElementById('login-form');
+    const errBox = document.getElementById('err-box');
+    const card = document.getElementById('card');
+    const submitBtn = document.getElementById('submit-btn');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const password = document.getElementById('pwd').value;
+      if (!password) return;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = '...';
+      errBox.style.display = 'none';
+
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+      const data = await res.json();
+
+      if (data.ok) {
+        window.location.href = '/admin';
+      } else {
+        errBox.style.display = 'block';
+        card.classList.add('shake');
+        card.addEventListener('animationend', () => card.classList.remove('shake'), { once: true });
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Войти';
+      }
+    });
+  </script>
+</body>
+</html>

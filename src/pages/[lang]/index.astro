@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../sections/Hero.astro';
+import About from '../../sections/About.astro';
+import ServicesPreview from '../../sections/ServicesPreview.astro';
+import CasesPreview from '../../sections/CasesPreview.astro';
+import Testimonials from '../../sections/Testimonials.astro';
+import CTA from '../../sections/CTA.astro';
+import { getLangStaticPaths, useTranslations } from '../../i18n/utils';
+import { getApprovedTestimonials } from '../../sanity/queries';
+
+export function getStaticPaths() {
+  return getLangStaticPaths();
+}
+
+const { lang } = Astro.params;
+const t = useTranslations(lang);
+
+// Если Sanity подключён — берём оттуда, иначе null → компонент использует i18n-плейсхолдеры
+const sanityTestimonials = await getApprovedTestimonials();
+---
+
+<BaseLayout lang={lang} title={t.meta.home.title} description={t.meta.home.description} path="">
+  <Hero lang={lang} />
+  <About lang={lang} />
+  <ServicesPreview lang={lang} />
+  <CasesPreview lang={lang} />
+  <Testimonials lang={lang} items={sanityTestimonials} />
+  <CTA lang={lang} />
+</BaseLayout>

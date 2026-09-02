@@ -1,0 +1,98 @@
+---
+import { useTranslations, localizedPath } from '../i18n/utils';
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const year = new Date().getFullYear();
+---
+
+<footer class="footer" role="contentinfo">
+  <div class="container footer__inner">
+    <a href={localizedPath(lang)} class="footer__logo">{t.logoMark}</a>
+
+    <ul class="footer__links" role="list">
+      <li><a href={localizedPath(lang, 'services')}>{t.nav.services}</a></li>
+      <li><a href={localizedPath(lang, 'portfolio')}>{t.nav.portfolio}</a></li>
+      <li><a href={localizedPath(lang, 'pricing')}>{t.nav.pricing}</a></li>
+      <li><a href={localizedPath(lang, 'contact')}>{t.nav.contact}</a></li>
+    </ul>
+
+    <div class="footer__contacts mono-tag">
+      <a href="https://t.me/axaxxaa">@axaxxaa</a>
+      <a href="mailto:petrovaalexsandra2004@gmail.com">petrovaalexsandra2004@gmail.com</a>
+    </div>
+
+    <a href="#main" class="footer__back-top mono-tag">{t.footer.backToTop} ↑</a>
+  </div>
+
+  <div class="container footer__bottom mono-tag">
+    <span>© {year} {t.siteName}. {t.footer.rights}</span>
+  </div>
+</footer>
+
+<style lang="scss">
+  @use '../styles/breakpoints' as *;
+
+  .footer {
+    padding-block: var(--space-xl) var(--space-lg);
+  }
+
+  .footer__inner {
+    display: grid;
+    gap: var(--space-lg);
+    padding-bottom: var(--space-lg);
+    border-bottom: var(--border-width) solid var(--color-border);
+
+    @include md {
+      grid-template-columns: auto 1fr auto auto;
+      align-items: center;
+    }
+  }
+
+  .footer__logo {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.5rem;
+  }
+
+  .footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .footer__links a:hover {
+    color: var(--color-accent);
+  }
+
+  .footer__contacts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .footer__contacts a:hover {
+    color: var(--color-accent);
+  }
+
+  .footer__back-top {
+    justify-self: start;
+
+    @include md {
+      justify-self: end;
+    }
+  }
+
+  .footer__back-top:hover {
+    color: var(--color-accent);
+  }
+
+  .footer__bottom {
+    padding-top: var(--space-lg);
+    color: var(--color-text-muted);
+  }
+</style>

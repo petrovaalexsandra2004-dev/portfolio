@@ -1,0 +1,55 @@
+---
+const { number, title, description, stack = [] } = Astro.props;
+---
+
+<article class="service-card hard-card" data-reveal>
+  <span class="service-card__number mono-tag">{number}</span>
+  <h3 class="service-card__title">{title}</h3>
+  <p class="service-card__description">{description}</p>
+  <ul class="service-card__stack" role="list">
+    {stack.map((tech) => (
+      <li class="service-card__tech mono-tag">{tech}</li>
+    ))}
+  </ul>
+</article>
+
+<style lang="scss">
+  .service-card {
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+  }
+
+  .service-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 10px 10px 0 var(--color-shadow);
+  }
+
+  .service-card__number {
+    color: var(--color-accent);
+  }
+
+  .service-card__title {
+    font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.625rem);
+  }
+
+  .service-card__description {
+    flex-grow: 1;
+  }
+
+  .service-card__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .service-card__tech {
+    padding: 0.25rem 0.6rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+  }
+</style>

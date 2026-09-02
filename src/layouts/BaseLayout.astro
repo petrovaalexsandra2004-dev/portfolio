@@ -1,0 +1,65 @@
+---
+import '@fontsource-variable/unbounded';
+import '@fontsource/space-grotesk/400.css';
+import '@fontsource/space-grotesk/500.css';
+import '@fontsource/space-grotesk/700.css';
+import '@fontsource/jetbrains-mono/400.css';
+import '@fontsource/jetbrains-mono/600.css';
+import '../styles/global.scss';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Cursor from '../components/Cursor.astro';
+import { locales, getLocale } from '../i18n/utils';
+
+const { lang, title, description, path = '' } = Astro.props;
+const locale = getLocale(lang);
+const canonicalPath = `/${lang}${path ? `/${path}` : ''}`;
+const canonicalURL = new URL(canonicalPath, Astro.site);
+const ogImage = new URL('/og-image.jpg', Astro.site);
+---
+
+<!doctype html>
+<html lang={locale.code}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    {locales.map((l) => (
+      <link rel="alternate" hreflang={l.code} href={new URL(`/${l.slug}${path ? `/${path}` : ''}`, Astro.site)} />
+    ))}
+    <link rel="alternate" hreflang="x-default" href={new URL(`/ru${path ? `/${path}` : ''}`, Astro.site)} />
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={locale.code} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script is:inline>
+      (function () {
+        var saved = localStorage.getItem('theme');
+        var theme = saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Перейти к содержимому</a>
+    <Cursor />
+    <Header lang={lang} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer lang={lang} />
+    <script src="../scripts/reveal.js"></script>
+    <script src="../scripts/cursor.js"></script>
+    <script src="../scripts/nav.js"></script>
+    <script src="../scripts/theme.js"></script>
+  </body>
+</html>

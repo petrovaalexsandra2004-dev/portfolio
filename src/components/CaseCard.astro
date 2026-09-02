@@ -1,0 +1,103 @@
+---
+const { title, category, description, url, domain, year, visitLabel, image } = Astro.props;
+---
+
+<article class="case-card hard-card" data-reveal>
+  {image && (
+    <a href={url} target="_blank" rel="noopener noreferrer" class="case-card__preview" tabindex="-1" aria-hidden="true">
+      <img
+        src={image}
+        alt={title}
+        width="1440"
+        height="900"
+        loading="lazy"
+        class="case-card__img"
+      />
+      <div class="case-card__overlay">
+        <span class="case-card__visit-hint">{visitLabel} ↗</span>
+      </div>
+    </a>
+  )}
+  <div class="case-card__info">
+    <div class="case-card__meta mono-tag">
+      <span>{category}</span>
+      <span>{year}</span>
+    </div>
+    <h3 class="case-card__title">{title}</h3>
+    <p class="case-card__description">{description}</p>
+    <a href={url} target="_blank" rel="noopener noreferrer" class="btn btn--ghost btn--sm">{visitLabel} ↗</a>
+  </div>
+</article>
+
+<style lang="scss">
+  .case-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .case-card__preview {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    flex-shrink: 0;
+  }
+
+  .case-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    display: block;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .case-card__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease;
+  }
+
+  .case-card__visit-hint {
+    opacity: 0;
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #fff;
+    transition: opacity 0.3s ease;
+  }
+
+  .case-card__preview:hover .case-card__img {
+    transform: scale(1.04);
+  }
+
+  .case-card__preview:hover .case-card__overlay {
+    background: rgba(0, 0, 0, 0.35);
+  }
+
+  .case-card__preview:hover .case-card__visit-hint {
+    opacity: 1;
+  }
+
+  .case-card__info {
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .case-card__meta {
+    display: flex;
+    justify-content: space-between;
+    color: var(--color-text-muted);
+  }
+
+  .case-card__description {
+    margin-bottom: var(--space-sm);
+  }
+</style>

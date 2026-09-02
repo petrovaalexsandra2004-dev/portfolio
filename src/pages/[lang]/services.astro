@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import CtaBanner from '../../components/CtaBanner.astro';
+import ServiceCard from '../../components/ServiceCard.astro';
+import { getLangStaticPaths, useTranslations, localizedPath } from '../../i18n/utils';
+import { services } from '../../data/services';
+
+export function getStaticPaths() {
+  return getLangStaticPaths();
+}
+
+const { lang } = Astro.params;
+const t = useTranslations(lang);
+---
+
+<BaseLayout lang={lang} title={t.meta.services.title} description={t.meta.services.description} path="services">
+  <PageHero eyebrow={t.services.eyebrow} title={t.services.title} intro={t.services.intro} />
+
+  <section class="section">
+    <div class="container">
+      <div class="grid-auto">
+        {services.map((service) => {
+          const item = t.services.items[service.id];
+          return (
+            <ServiceCard
+              number={service.number}
+              title={item.title}
+              description={item.description}
+              stack={item.stack}
+            />
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <CtaBanner
+    title={t.portfolio.cta.title}
+    buttonLabel={t.portfolio.cta.button}
+    href={localizedPath(lang, 'contact')}
+  />
+</BaseLayout>

@@ -1,0 +1,26 @@
+---
+const { eyebrow, title, intro } = Astro.props;
+---
+
+<section class="section page-hero">
+  <div class="container">
+    <span class="eyebrow" data-reveal>{eyebrow}</span>
+    <h1 class="page-hero__title" data-reveal>{title}</h1>
+    {intro && <p class="page-hero__intro" data-reveal>{intro}</p>}
+  </div>
+</section>
+
+<style lang="scss">
+  .page-hero {
+    padding-top: var(--space-2xl);
+  }
+
+  .page-hero__title {
+    margin-block: var(--space-md);
+  }
+
+  .page-hero__intro {
+    max-width: 56ch;
+    font-size: clamp(1.05rem, 1rem + 0.3vw, 1.25rem);
+  }
+</style>

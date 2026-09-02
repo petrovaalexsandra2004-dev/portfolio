@@ -1,0 +1,50 @@
+@use 'variables';
+@use 'reset';
+@use 'typography';
+@use 'animations';
+@use 'buttons';
+@use 'cursor';
+@use 'layout';
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-accent);
+  border-radius: var(--radius-full);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.form-message {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  border: var(--border-width) solid;
+
+  &[data-type='success'] {
+    border-color: #22c55e;
+    color: #22c55e;
+    background: color-mix(in srgb, #22c55e 10%, transparent);
+  }
+
+  &[data-type='error'] {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  }
+}

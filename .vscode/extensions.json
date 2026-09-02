@@ -1,0 +1,4 @@
+{
+  "recommendations": ["anthropic.claude-code", "astro-build.astro-vscode"],
+  "unwantedRecommendations": []
+}

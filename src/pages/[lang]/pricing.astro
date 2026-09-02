@@ -1,0 +1,101 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import CtaBanner from '../../components/CtaBanner.astro';
+import PricingCard from '../../components/PricingCard.astro';
+import { getLangStaticPaths, useTranslations, localizedPath } from '../../i18n/utils';
+import { services } from '../../data/services';
+
+export function getStaticPaths() {
+  return getLangStaticPaths();
+}
+
+const { lang } = Astro.params;
+const t = useTranslations(lang);
+const contactHref = localizedPath(lang, 'contact');
+---
+
+<BaseLayout lang={lang} title={t.meta.pricing.title} description={t.meta.pricing.description} path="pricing">
+  <PageHero eyebrow={t.pricing.eyebrow} title={t.pricing.title} intro={t.pricing.intro} />
+
+  <section class="section">
+    <div class="container">
+      <div class="grid-auto">
+        {services.map((service) => {
+          const item = t.services.items[service.id];
+          return (
+            <PricingCard
+              number={service.number}
+              title={item.title}
+              description={item.description}
+              priceLabel={t.pricing.priceOnRequest}
+              ctaLabel={t.pricing.ctaRequest}
+              href={contactHref}
+            />
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <section class="section process">
+    <div class="container">
+      <div class="section__head">
+        <h2>{t.pricing.process.title}</h2>
+      </div>
+
+      <ol class="process__list" data-reveal-stagger>
+        {t.pricing.process.steps.map((step, i) => (
+          <li class="process__step">
+            <span class="process__index mono-tag">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="process__title">{step.title}</h3>
+            <p class="process__text">{step.text}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <CtaBanner title={t.portfolio.cta.title} buttonLabel={t.pricing.ctaRequest} href={contactHref} />
+</BaseLayout>
+
+<style lang="scss">
+  @use '../../styles/breakpoints' as *;
+
+  .process__list {
+    display: grid;
+    gap: 0;
+  }
+
+  .process__step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-md) var(--space-lg);
+    align-items: baseline;
+    padding-block: var(--space-lg);
+    border-bottom: 1px solid var(--color-border);
+
+    @include md {
+      grid-template-columns: 80px 1fr 2fr;
+    }
+  }
+
+  .process__index {
+    color: var(--color-accent);
+    font-size: 1.25rem;
+  }
+
+  .process__title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 800;
+  }
+
+  .process__text {
+    grid-column: 2 / -1;
+
+    @include md {
+      grid-column: auto;
+    }
+  }
+</style>

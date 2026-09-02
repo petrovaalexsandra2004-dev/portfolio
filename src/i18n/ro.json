@@ -1,0 +1,215 @@
+{
+  "htmlLang": "ro",
+  "siteName": "Alexandra Petrova",
+  "logoMark": "AP.",
+  "meta": {
+    "home": {
+      "title": "Alexandra Petrova — Dezvoltator Web | Site-uri, landing-uri, magazine",
+      "description": "Dezvoltare de magazine online, landing page-uri, site-uri corporative și marketplace-uri la cheie. Design modern, cod curat, SEO și viteză."
+    },
+    "services": {
+      "title": "Servicii de dezvoltare web — Alexandra Petrova",
+      "description": "Magazine online, site-uri corporative, site-uri de prezentare, landing page-uri, cataloage și marketplace-uri. Dezvoltare la cheie pe Next.js, Astro și Nuxt."
+    },
+    "portfolio": {
+      "title": "Portofoliu — proiecte reale | Alexandra Petrova",
+      "description": "Studii de caz: magazinul online de cosmetice Miss Taiss și landing page-ul consultantului financiar MyCapital. Vezi site-urile live."
+    },
+    "pricing": {
+      "title": "Prețuri pentru dezvoltarea site-urilor | Alexandra Petrova",
+      "description": "Costul dezvoltării unui magazin online, landing page, site de prezentare sau catalog — calculat pe baza brief-ului. Proces transparent, de la cerere până la lansare."
+    },
+    "contact": {
+      "title": "Contact — hai să discutăm proiectul | Alexandra Petrova",
+      "description": "Scrie-mi pe Telegram, email sau telefon ca să discutăm dezvoltarea site-ului tău. Răspund în aceeași zi."
+    }
+  },
+  "nav": {
+    "home": "Acasă",
+    "services": "Servicii",
+    "portfolio": "Portofoliu",
+    "pricing": "Prețuri",
+    "contact": "Contact",
+    "cta": "Discută proiectul",
+    "openMenu": "Deschide meniul",
+    "closeMenu": "Închide meniul"
+  },
+  "theme": {
+    "toggleLight": "Temă deschisă",
+    "toggleDark": "Temă întunecată"
+  },
+  "hero": {
+    "available": "Disponibilă pentru proiecte · 2026",
+    "lines": ["Site-uri", "care", "vând."],
+    "subtitle": "Dezvoltare frontend pentru magazine online, landing page-uri, site-uri corporative și marketplace-uri — de la idee până la lansare.",
+    "ctaPrimary": "Vezi portofoliul",
+    "ctaSecondary": "Discută proiectul",
+    "scrollHint": "Scroll ↓"
+  },
+  "about": {
+    "eyebrow": "Despre mine",
+    "title": "Fără șabloane. Soluții.",
+    "text": "Mă numesc Alexandra. În ultimii 2 ani creez site-uri care rezolvă probleme de business — nu doar arată bine, ci chiar funcționează. Am început cu landing page-uri, acum construiesc magazine online, site-uri corporative și marketplace-uri. Principiul principal: cod curat, mobile-first și SEO incluse din prima zi — nu ca opțiune, ci ca cerință de bază.",
+    "stats": [
+      { "value": "2+", "label": "ani în dezvoltare" },
+      { "value": "15+", "label": "proiecte livrate" },
+      { "value": "100%", "label": "clienți revin" }
+    ],
+    "features": [
+      { "title": "Mobile-first", "text": "Fiecare site este construit întâi pentru ecranul mobil, apoi extins" },
+      { "title": "SEO-ready", "text": "Semantică, meta-taguri, viteză de încărcare — incluse din prima zi" },
+      { "title": "Fără elemente inutile", "text": "Cod curat, fără abstracții excesive și biblioteci grele" }
+    ]
+  },
+  "marquee": ["Magazine online", "Site-uri corporative", "Site-uri de prezentare", "Landing page-uri", "Cataloage", "Marketplace-uri"],
+  "servicesPreview": {
+    "eyebrow": "Ce fac",
+    "title": "Servicii",
+    "linkAll": "Toate serviciile"
+  },
+  "testimonials": {
+    "eyebrow": "Recenzii",
+    "title": "Ce spun clienții",
+    "items": [
+      {
+        "name": "Marina S.",
+        "company": "Brand de cosmetice",
+        "text": "Alexandra a realizat magazinul nostru online exact la timp și chiar mai bine decât ne așteptam. Site-ul este rapid, frumos și ușor de folosit — conversia a crescut deja în prima lună. Vom colabora din nou!",
+        "rating": 5
+      },
+      {
+        "name": "Dmitri V.",
+        "company": "Consultant financiar",
+        "text": "Am căutat mult un developer bun — l-am găsit. Landing page-ul este realizat profesionist: SEO configurat, viteză excelentă, versiunea mobilă impecabilă. Cereri au venit deja după o săptămână de la lansare.",
+        "rating": 5
+      },
+      {
+        "name": "Olga M.",
+        "company": "Afacere mică",
+        "text": "Este foarte plăcut să lucrezi cu un profesionist care înțelege din jumătate de cuvânt. Am explicat cerința — Alexandra a propus o soluție mai bună decât m-am gândit eu. Site-ul a ieșit modern și elegant.",
+        "rating": 5
+      },
+      {
+        "name": "Anton K.",
+        "company": "Magazin de îmbrăcăminte",
+        "text": "Am lansat magazinul online în 3 săptămâni. Viteza de lucru m-a impresionat — nu mă așteptam la o asemenea promptitudine. Catalog, filtre, coș — totul funcționează impecabil. Clienții sunt mulțumiți, eu de asemenea.",
+        "rating": 5
+      },
+      {
+        "name": "Svetlana N.",
+        "company": "Lanț de restaurante",
+        "text": "Am realizat un site corporativ cu meniu și rezervări online. Alexandra a propus o structură convenabilă și a rezolvat singură nuanțele sistemului nostru. Rezultatul a depășit așteptările.",
+        "rating": 5
+      },
+      {
+        "name": "Maxim P.",
+        "company": "Start-up IT",
+        "text": "Aveam nevoie de un landing page pentru atragerea investițiilor — realizat rapid și cu gust. Investitorii au remarcat aspectul profesional al site-ului chiar de la prima întâlnire. Recomand fără ezitare.",
+        "rating": 5
+      }
+    ]
+  },
+  "services": {
+    "eyebrow": "Servicii",
+    "title": "Cu ce te pot ajuta",
+    "intro": "Șase direcții de dezvoltare — de la un site de prezentare compact până la un marketplace complex. Aleg tehnologia în funcție de proiect, nu invers.",
+    "items": {
+      "ecommerce": {
+        "title": "Magazine online",
+        "description": "Magazine online complete: catalog, coș, finalizarea comenzii, cont personal. Încărcare rapidă și panou de administrare ușor de folosit.",
+        "stack": ["Next.js", "Tailwind CSS", "Zustand"]
+      },
+      "corporate": {
+        "title": "Site-uri corporative",
+        "description": "Site-uri cu mai multe pagini pentru companii: servicii, echipă, studii de caz, blog. Structură clară și arhitectură scalabilă.",
+        "stack": ["Next.js", "Nuxt 3", "CSS Modules"]
+      },
+      "card": {
+        "title": "Site-uri de prezentare",
+        "description": "Site compact pentru brand personal sau afacere mică: pagina principală, portofoliu, contact. Rapid, simplu, fără elemente inutile.",
+        "stack": ["Astro", "SCSS", "Vanilla JS"]
+      },
+      "landing": {
+        "title": "Landing page-uri",
+        "description": "Pagini unice pentru un scop concret — vânzare, abonare, lansare de produs. Ofertă puternică și un singur CTA clar.",
+        "stack": ["Astro", "GSAP", "SCSS"]
+      },
+      "catalog": {
+        "title": "Cataloage de produse și servicii",
+        "description": "Catalog cu filtre, categorii și carduri de produse — fără coș, pentru prezentarea ofertei și colectarea cererilor.",
+        "stack": ["Next.js", "CSS Modules"]
+      },
+      "marketplace": {
+        "title": "Marketplace-uri",
+        "description": "Platforme multi-vânzător: vânzători, cumpărători, conturi personale, moderare. Logică complexă, arhitectură solidă.",
+        "stack": ["Next.js", "Tailwind CSS", "Zustand"]
+      }
+    }
+  },
+  "portfolio": {
+    "eyebrow": "Portofoliu",
+    "title": "Proiecte reale",
+    "intro": "Două proiecte live — de la primul ecran până în producție.",
+    "linkAll": "Tot portofoliul",
+    "visitSite": "Vezi site-ul",
+    "cases": {
+      "misstaiss": {
+        "title": "Miss Taiss",
+        "category": "E-commerce · Cosmetice",
+        "description": "Magazin online de creioane cosmetice: catalog pe categorii (ochi, buze, sprâncene), recenzii, comenzi en-gros și versiune mobilă adaptivă."
+      },
+      "mycapital": {
+        "title": "MyCapital",
+        "category": "Landing Page · Finanțe",
+        "description": "Landing page pentru un consultant financiar în asigurări de viață: produse, procesul de lucru, blog și formular de programare la consultație."
+      }
+    },
+    "cta": {
+      "title": "Vrei un rezultat asemănător?",
+      "button": "Discută proiectul"
+    }
+  },
+  "pricing": {
+    "eyebrow": "Prețuri",
+    "title": "Cât costă",
+    "intro": "Costul depinde de volum, termene și complexitatea proiectului — trimite-mi brief-ul și îți trimit calculul.",
+    "priceOnRequest": "Preț la cerere",
+    "ctaRequest": "Solicită preț",
+    "process": {
+      "title": "Cum decurge lucrul",
+      "steps": [
+        { "title": "Brief", "text": "Trimiți cerința, exemple și referințe" },
+        { "title": "Evaluare", "text": "Pregătesc estimarea și termenele în 1–2 zile" },
+        { "title": "Contract", "text": "Stabilim volumul, etapele și plata" },
+        { "title": "Dezvoltare", "text": "Îți arăt progresul la fiecare etapă" },
+        { "title": "Lansare", "text": "Deploy, testare, predarea proiectului" }
+      ]
+    }
+  },
+  "contact": {
+    "eyebrow": "Contact",
+    "title": "Discutăm proiectul?",
+    "intro": "Spune-mi ce ai nevoie — răspund în aceeași zi.",
+    "directTitle": "Direct",
+    "telegramLabel": "Telegram",
+    "emailLabel": "Email",
+    "phoneLabel": "Telefon",
+    "form": {
+      "title": "Sau prin formular",
+      "name": "Nume",
+      "namePlaceholder": "Cum să-ți spun",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "message": "Mesaj",
+      "messagePlaceholder": "Descrie pe scurt proiectul",
+      "submit": "Trimite",
+      "sending": "Se trimite...",
+      "success": "Cererea a fost trimisă! Voi răspunde în aceeași zi.",
+      "error": "Ceva a mers greșit. Scrie-mi pe Telegram."
+    }
+  },
+  "footer": {
+    "rights": "Toate drepturile rezervate.",
+    "backToTop": "Sus"
+  }
+}

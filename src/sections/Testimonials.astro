@@ -1,0 +1,311 @@
+---
+import { useTranslations } from '../i18n/utils';
+
+const { lang, items } = Astro.props;
+const t = useTranslations(lang);
+
+const testimonials = items?.length ? items : t.testimonials.items;
+---
+
+<section class="section testimonials">
+  <div class="container">
+
+    <div class="testimonials__head">
+      <div>
+        <span class="eyebrow">{t.testimonials.eyebrow}</span>
+        <h2 class="testimonials__title" data-reveal>{t.testimonials.title}</h2>
+      </div>
+      <div class="testimonials__nav">
+        <button class="testimonials__btn" id="t-prev" aria-label="Предыдущий">←</button>
+        <button class="testimonials__btn" id="t-next" aria-label="Следующий">→</button>
+      </div>
+    </div>
+
+    <!-- viewport: обрезает всё что за правым краем -->
+    <div class="testimonials__viewport">
+      <div class="testimonials__track" id="t-track">
+        {testimonials.map((item) => (
+          <article class="testimonials__card hard-card">
+            <div class="testimonials__stars" aria-label={`${item.rating} из 5`}>
+              {Array.from({ length: item.rating }).map(() => (
+                <span aria-hidden="true">★</span>
+              ))}
+            </div>
+            <blockquote class="testimonials__text">
+              <p>"{item.text}"</p>
+            </blockquote>
+            <footer class="testimonials__author">
+              <span class="testimonials__name">{item.name}</span>
+              {item.company && <span class="testimonials__company">{item.company}</span>}
+            </footer>
+          </article>
+        ))}
+      </div>
+    </div>
+
+    <div class="testimonials__dots" id="t-dots">
+      {testimonials.map((_, i) => (
+        <button
+          class={`testimonials__dot${i === 0 ? ' is-active' : ''}`}
+          data-index={i}
+          aria-label={`Отзыв ${i + 1}`}
+        ></button>
+      ))}
+    </div>
+
+  </div>
+</section>
+
+<style lang="scss">
+  @use '../styles/breakpoints' as *;
+
+  .testimonials__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+  }
+
+  .testimonials__title {
+    font-size: clamp(2rem, 4vw + 1rem, 3.5rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-top: var(--space-xs);
+  }
+
+  .testimonials__nav {
+    display: flex;
+    gap: var(--space-sm);
+    padding-bottom: 4px;
+    flex-shrink: 0;
+  }
+
+  .testimonials__btn {
+    width: 52px;
+    height: 52px;
+    border: var(--border-width) solid var(--color-border-hard);
+    background: transparent;
+    cursor: pointer;
+    font-size: 1.25rem;
+    color: var(--color-text);
+    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    &:hover {
+      background: var(--color-accent);
+      color: var(--color-on-accent);
+      border-color: var(--color-accent);
+    }
+
+    &:disabled {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+  }
+
+  /* viewport обрезает то что выходит за правый край */
+  .testimonials__viewport {
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .testimonials__track {
+    display: flex;
+    gap: var(--space-lg);
+    transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+    padding-bottom: 4px; /* чтобы не обрезало тень карточек */
+  }
+
+  /* ширина карточки = 100% viewport / количество видимых */
+  .testimonials__card {
+    flex: 0 0 100%;
+    min-width: 0;
+    padding: var(--space-xl) var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    box-sizing: border-box;
+
+    @include md {
+      flex: 0 0 calc(50% - var(--space-lg) / 2);
+    }
+
+    @include xl {
+      flex: 0 0 calc(33.333% - var(--space-lg) * 2 / 3);
+    }
+  }
+
+  .testimonials__stars {
+    display: flex;
+    gap: 2px;
+    font-size: 1.125rem;
+    color: var(--color-accent);
+  }
+
+  .testimonials__text {
+    flex: 1;
+    p {
+      font-size: clamp(1rem, 0.95rem + 0.3vw, 1.125rem);
+      line-height: 1.65;
+    }
+  }
+
+  .testimonials__author {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: var(--space-md);
+    border-top: var(--border-width) solid var(--color-border);
+  }
+
+  .testimonials__name {
+    font-weight: 700;
+    font-size: 0.9375rem;
+  }
+
+  .testimonials__company {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+  }
+
+  .testimonials__dots {
+    display: flex;
+    gap: var(--space-sm);
+    margin-top: var(--space-lg);
+  }
+
+  .testimonials__dot {
+    height: 4px;
+    width: 24px;
+    background: var(--color-border-hard);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: background var(--transition-base), width var(--transition-base);
+
+    &.is-active {
+      background: var(--color-accent);
+      width: 48px;
+    }
+  }
+</style>
+
+<script is:inline>
+  window.addEventListener('load', function () {
+    var track = document.getElementById('t-track');
+    var dotsEl = document.getElementById('t-dots');
+    var prevBtn = document.getElementById('t-prev');
+    var nextBtn = document.getElementById('t-next');
+
+    if (!track || !dotsEl || !prevBtn || !nextBtn) return;
+
+    var realCards = Array.from(track.querySelectorAll('.testimonials__card'));
+    var total = realCards.length;
+    var dots = Array.from(dotsEl.querySelectorAll('.testimonials__dot'));
+    var TRANSITION = 'transform 0.55s cubic-bezier(0.16, 1, 0.3, 1)';
+
+    // Клонируем первую и последнюю карточки для бесшовного зацикливания
+    var firstClone = realCards[0].cloneNode(true);
+    var lastClone  = realCards[total - 1].cloneNode(true);
+    firstClone.setAttribute('aria-hidden', 'true');
+    lastClone.setAttribute('aria-hidden', 'true');
+    track.appendChild(firstClone);                    // в конце
+    track.insertBefore(lastClone, realCards[0]);      // в начале
+
+    // Порядок: [lastClone, card1…cardN, firstClone]
+    // Стартуем с pos=1 (card1 — первый реальный)
+    var pos = 1;
+    var timer = null;
+
+    function cardWidth() {
+      // берём ширину реальной карточки (не клона)
+      return realCards[0].getBoundingClientRect().width;
+    }
+
+    function gapWidth() {
+      return parseFloat(getComputedStyle(track).gap) || 32;
+    }
+
+    function setTranslate(animate) {
+      if (!animate) {
+        track.style.transition = 'none';
+        track.getBoundingClientRect(); // flush
+      } else {
+        track.style.transition = TRANSITION;
+      }
+      track.style.transform = 'translateX(-' + (pos * (cardWidth() + gapWidth())) + 'px)';
+      if (!animate) {
+        // Восстанавливаем transition после flush
+        requestAnimationFrame(function () {
+          track.style.transition = TRANSITION;
+        });
+      }
+    }
+
+    function updateDots() {
+      // pos 1→dot0, pos 2→dot1 ... pos N→dotN-1
+      // pos 0 (lastClone) → dotN-1, pos N+1 (firstClone) → dot0
+      var idx = pos - 1;
+      if (pos === 0)        idx = total - 1;
+      if (pos === total + 1) idx = 0;
+      dots.forEach(function (d, i) {
+        d.classList.toggle('is-active', i === idx);
+      });
+    }
+
+    // После анимации: бесшумный прыжок если попали на клон
+    track.addEventListener('transitionend', function () {
+      if (pos === total + 1) { pos = 1;     setTranslate(false); }
+      if (pos === 0)         { pos = total; setTranslate(false); }
+    });
+
+    function goTo(newPos) {
+      pos = newPos;
+      setTranslate(true);
+      updateDots();
+    }
+
+    function next() { goTo(pos + 1); }
+    function prev() { goTo(pos - 1); }
+
+    function startTimer() {
+      clearInterval(timer);
+      timer = setInterval(next, 4000);
+    }
+
+    prevBtn.addEventListener('click', function () { prev(); startTimer(); });
+    nextBtn.addEventListener('click', function () { next(); startTimer(); });
+
+    dots.forEach(function (d, i) {
+      d.addEventListener('click', function () { goTo(i + 1); startTimer(); });
+    });
+
+    // Свайп
+    var startX = 0;
+    track.addEventListener('touchstart', function (e) { startX = e.touches[0].clientX; }, { passive: true });
+    track.addEventListener('touchend', function (e) {
+      var diff = startX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 50) { diff > 0 ? next() : prev(); startTimer(); }
+    });
+
+    // Пауза при наведении
+    track.addEventListener('mouseenter', function () { clearInterval(timer); });
+    track.addEventListener('mouseleave', function () { startTimer(); });
+
+    // Пересчёт при ресайзе
+    window.addEventListener('resize', function () { setTranslate(false); });
+
+    // Инициализация: перепрыгиваем на card1 без анимации
+    setTranslate(false);
+    updateDots();
+    startTimer();
+  });
+</script>

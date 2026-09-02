@@ -1,0 +1,161 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import { getLangStaticPaths, useTranslations } from '../../i18n/utils';
+
+export function getStaticPaths() {
+  return getLangStaticPaths();
+}
+
+const { lang } = Astro.params;
+const t = useTranslations(lang);
+
+const telegramHandle = 'axaxxaa';
+const email = 'petrovaalexsandra2004@gmail.com';
+const phoneRaw = '0957932276';
+const phoneDisplay = phoneRaw.replace(/(\d{3})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
+---
+
+<BaseLayout lang={lang} title={t.meta.contact.title} description={t.meta.contact.description} path="contact">
+  <PageHero eyebrow={t.contact.eyebrow} title={t.contact.title} intro={t.contact.intro} />
+
+  <section class="section contact-section">
+    <div class="container contact-grid">
+      <div class="contact-direct" data-reveal>
+        <h2 class="contact-direct__title">{t.contact.directTitle}</h2>
+
+        <a class="contact-link hard-card" href={`https://t.me/${telegramHandle}`} target="_blank" rel="noopener noreferrer">
+          <span class="contact-link__label mono-tag">{t.contact.telegramLabel}</span>
+          <span class="contact-link__value">@{telegramHandle}</span>
+        </a>
+
+        <a class="contact-link hard-card" href={`mailto:${email}`}>
+          <span class="contact-link__label mono-tag">{t.contact.emailLabel}</span>
+          <span class="contact-link__value">{email}</span>
+        </a>
+
+        <a class="contact-link hard-card" href={`tel:${phoneRaw}`}>
+          <span class="contact-link__label mono-tag">{t.contact.phoneLabel}</span>
+          <span class="contact-link__value">{phoneDisplay}</span>
+        </a>
+      </div>
+
+      <form class="contact-form hard-card" id="contact-form" data-reveal data-email={email}>
+        <h2 class="contact-form__title">{t.contact.form.title}</h2>
+
+        <label class="contact-form__field">
+          <span class="mono-tag">{t.contact.form.name}</span>
+          <input type="text" name="name" placeholder={t.contact.form.namePlaceholder} required />
+        </label>
+
+        <label class="contact-form__field">
+          <span class="mono-tag">{t.contact.form.email}</span>
+          <input type="email" name="email" placeholder={t.contact.form.emailPlaceholder} required />
+        </label>
+
+        <label class="contact-form__field">
+          <span class="mono-tag">{t.contact.form.message}</span>
+          <textarea name="message" rows="4" placeholder={t.contact.form.messagePlaceholder} required></textarea>
+        </label>
+
+        <button
+          type="submit"
+          class="btn btn--primary"
+          data-sending={t.contact.form.sending}
+          data-success={t.contact.form.success}
+          data-error={t.contact.form.error}
+        >
+          {t.contact.form.submit}
+        </button>
+      </form>
+    </div>
+  </section>
+</BaseLayout>
+
+<script src="../../scripts/contact-form.js"></script>
+
+<style lang="scss">
+  @use '../../styles/breakpoints' as *;
+
+  .contact-grid {
+    display: grid;
+    gap: var(--space-xl);
+
+    @include lg {
+      grid-template-columns: 1fr 1.2fr;
+    }
+  }
+
+  .contact-direct {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .contact-direct__title,
+  .contact-form__title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin-bottom: var(--space-sm);
+  }
+
+  .contact-link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding: var(--space-lg);
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+  }
+
+  .contact-link:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 10px 10px 0 var(--color-shadow);
+  }
+
+  .contact-link__label {
+    color: var(--color-text-muted);
+  }
+
+  .contact-link__value {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .contact-form {
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .contact-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .contact-form__field span {
+    color: var(--color-text-muted);
+  }
+
+  .contact-form__field input,
+  .contact-form__field textarea {
+    background: var(--color-bg);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem 1rem;
+    transition: border-color var(--transition-fast);
+    resize: vertical;
+  }
+
+  .contact-form__field input:focus,
+  .contact-form__field textarea:focus {
+    border-color: var(--color-accent);
+  }
+
+  .contact-form button {
+    align-self: flex-start;
+  }
+</style>
