@@ -4,7 +4,7 @@ import sitemap from '@astrojs/sitemap';
 import vercel from '@astrojs/vercel';
 
 export default defineConfig({
-  site: 'https://petrova-dev.com', // TODO: замени на свой домен после деплоя
+  site: 'https://portfolio-five-wine-12.vercel.app',
   adapter: vercel(),
   integrations: [sitemap()],
   redirects: { '/': '/ru' },
